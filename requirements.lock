@@ -10,3 +10,9 @@
 #   universal: false
 
 -e file:.
+asgiref==3.8.1
+    # via django
+django==5.1.5
+    # via recommendation-system
+sqlparse==0.5.3
+    # via django
