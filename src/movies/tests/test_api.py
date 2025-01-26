@@ -1,6 +1,9 @@
+import json
+
 import pytest
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APIClient
 
 from movies.models import Movie
 from .factories import (
@@ -8,7 +11,7 @@ from .factories import (
 )
 
 @pytest.mark.django_db
-def test_create_movie(client):
+def test_create_movie(client: APIClient) -> None:
   # arrange
   url = reverse('movies:movie-api')
   data = {
@@ -16,14 +19,14 @@ def test_create_movie(client):
     'genres': json.dumps(['Sci-Fi', 'Adventure'])
   }
   # action
-  response = client.post(url, json=data)
+  response = client.post(url, data=data)
   # assert
   assert response.status_code == status.HTTP_201_CREATED, response.json()
   assert Movie.objects.filter(title='A New Hope').exists()
   assert Movie.objects.filter(title='A New Hope').count() == 1
 
 @pytest.mark.django_db
-def test_retrieve_movie(client):
+def test_retrieve_movie(client: APIClient) -> None:
   # arrange
   movie = MovieFactory()
   url = reverse('movies:movie-api-detail', kwargs={'pk': movie.id})
@@ -38,7 +41,7 @@ def test_retrieve_movie(client):
   }
 
 @pytest.mark.django_db
-def test_update_movie(client):
+def test_update_movie(client: APIClient) -> None:
   # arrange
   movie = MovieFactory()
   new_title = "Updated Movie Title"
@@ -53,7 +56,7 @@ def test_update_movie(client):
   assert movie.title == new_title
 
 @pytest.mark.django_db
-def test_delete_movie(client):
+def test_delete_movie(client: APIClient) -> None:
   # arrange
   movie = MovieFactory()
   url = reverse('movies:movie-api-detail', kwargs={'pk': movie.id})
@@ -64,7 +67,7 @@ def test_delete_movie(client):
   assert not Movie.objects.filter(id=movie.id).exists()
 
 @pytest.mark.django_db
-def test_list_movies_with_pagination(client):
+def test_list_movies_with_pagination(client: APIClient) -> None:
   # Create a batch of movies, adjust the number according to your PAGE_SIZE setting
   movies = MovieFactory.create_batch(10)
   # Define the URL for the list movies endpoint
