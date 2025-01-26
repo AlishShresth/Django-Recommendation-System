@@ -13,7 +13,7 @@ from .factories import (
 @pytest.mark.django_db
 def test_create_movie(client: APIClient) -> None:
   # arrange
-  url = reverse('movies:movie-api')
+  url = reverse('movies:movie-list')
   data = {
     'title': 'A New Hope',
     'genres': json.dumps(['Sci-Fi', 'Adventure'])
@@ -29,7 +29,7 @@ def test_create_movie(client: APIClient) -> None:
 def test_retrieve_movie(client: APIClient) -> None:
   # arrange
   movie = MovieFactory()
-  url = reverse('movies:movie-api-detail', kwargs={'pk': movie.id})
+  url = reverse('movies:movie-detail', kwargs={'pk': movie.id})
   # action
   response = client.get(url)
   # assert
@@ -45,7 +45,7 @@ def test_update_movie(client: APIClient) -> None:
   # arrange
   movie = MovieFactory()
   new_title = "Updated Movie Title"
-  url = reverse('movies:movie-api-detail', kwargs={'pk': movie.id})
+  url = reverse('movies:movie-detail', kwargs={'pk': movie.id})
   data = {'title': new_title}
   # action
   response = client.put(url, data=data, content_type='application/json')
@@ -59,7 +59,7 @@ def test_update_movie(client: APIClient) -> None:
 def test_delete_movie(client: APIClient) -> None:
   # arrange
   movie = MovieFactory()
-  url = reverse('movies:movie-api-detail', kwargs={'pk': movie.id})
+  url = reverse('movies:movie-detail', kwargs={'pk': movie.id})
   # action
   response = client.delete(url)
   # assert
@@ -71,7 +71,7 @@ def test_list_movies_with_pagination(client: APIClient) -> None:
   # Create a batch of movies, adjust the number according to your PAGE_SIZE setting
   movies = MovieFactory.create_batch(10)
   # Define the URL for the list movies endpoint
-  url = reverse('movies:movie-api')
+  url = reverse('movies:movie-list')
   # Perform a GET request to the list endpoint
   response = client.get(url)
   # Assert that the response status code is 200 OK
