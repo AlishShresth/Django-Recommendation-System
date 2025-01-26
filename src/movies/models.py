@@ -4,6 +4,6 @@ class Movie(models.Model):
   title = models.CharField(max_length=255)
   genres = models.JSONField(default=list)
 
-  def __str__(self):
+  def __str__(self) -> str:
     return self.title
 
