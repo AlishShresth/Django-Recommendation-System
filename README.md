@@ -1,10 +1,12 @@
 # recommendation-system
 
-1) Building and Testing Basic APIs
- - API-First Design Approach
- - Designing Simple APIs
- - Testing API Views
- - Writing and Testing Serializers
- - Developing CRUD Operations
- - Refactoring Code with TDD
+2) Data Models and Processing in Data Science
+ - Movie Recommendation System
+ - Designing Data Models for Data Science Projects
+ - Extending the Models
+ - API Architecture
+ - Creating Endpoints for the User Profile
+ - Understanding SPARQL
+ - Getting the Data for Our Project
+ - Creating and Testing APIs for Data Ingestion
 

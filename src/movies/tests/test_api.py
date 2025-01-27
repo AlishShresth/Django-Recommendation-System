@@ -8,6 +8,7 @@ from rest_framework.test import APIClient
 from movies.models import Movie
 from .factories import (
   MovieFactory,
+  UserFactory
 )
 
 @pytest.mark.django_db
@@ -100,12 +101,78 @@ def test_list_movies_with_pagination(client: APIClient) -> None:
     assert set(movie_data.keys()) == {'id', 'title', 'genres'}
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "new_preferences, expected_genre",
+    [
+        ({"genre": "sci-fi"}, "sci-fi"),
+        ({"genre": "drama"}, "drama"),
+        ({"genre": "action"}, "action"),
+        (
+            {"genre": "sci-fi", "actor": "Sigourney Weaver", "year": "1979"},
+            "sci-fi",
+        ),
+        # Adding more scenarios if needed where a 200 response is expected
+    ],
+)
+def test_add_and_retrieve_preferences_success(new_preferences, expected_genre):
+  user = UserFactory()
+  client = APIClient()
+  preferences_url = reverse("user-preferences", kwargs={"user_id": user.id})
+  # Add new preferences
+  response = client.post(preferences_url, {"new_preferences": new_preferences}, format='json')
+  assert response.status_code in [200, 201]
 
+  # Retrieve preferences to verify
+  response = client.get(preferences_url)
+  assert response.status_code == 200
+  assert response.data['genre'] == [expected_genre]
 
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+  "new_preferences", [
+    ({}), # Empty preferences
+    ({"genreee": "comedy"}), # Invalid field
+  ]
+)
+def test_add_preferences_failure(new_preferences):
+  user = UserFactory()
+  client = APIClient()
+  preferences_url = reverse("user-preferences", kwargs={"user_id": user.id})
 
+  # Attempt to add new preferences
+  response = client.post(preferences_url, {"new_preferences": new_preferences}, format='json')
+  assert response.status_code == 400, response.json()
 
+@pytest.mark.django_db
+def test_add_and_retrieve_watch_history_with_movie_id() -> None:
+  user = UserFactory()
+  client = APIClient()
+  watch_history_url = reverse("user-watch-history", kwargs={"user_id": user.id})
+  # Create movie instances using the MovieFactory
+  movie1 = MovieFactory(title="The Godfather", release_year=1972, directors=["Francis Ford Coppola"], genres=["Crime", "Drama"])
+  movie2 = MovieFactory(title="Taxi Driver", release_year=1976, directors=["Martin Scorsese"], genres=["Crime", "Drama"])
+  # Add movies to watch history using their IDs
+  for movie in [movie1, movie2]:
+    response = client.post(watch_history_url, {"id": movie.id}, format="json")
+    assert response.status_code == 201
+  # Retrieve watch history to verify the addition
+  response = client.get(watch_history_url)
+  assert response.status_code == 200
+  # This assumes your response includes the movie IDs in the watch history
+  retrieved_movie_ids = [item["title"] for item in response.data["watch_history"]]
+  for movie_title in [movie1.title, movie2.title]:
+    assert movie_title in retrieved_movie_ids
 
-
-
-
+@pytest.mark.django.db
+def test_add_invalid_movie_id_to_watch_history() -> None:
+  # Arrange: Create a user instance using Factory Boy
+  user = UserFactory()
+  client = APIClient()
+  watch_history_url = reverse("user-watch-history", kwargs={"user_id": user.id})
+  # Act: Attempt to add a non-existent movie to the user's watch history
+  invalid_movie_id = 99999
+  response = client.post(watch_history_url, {"movie_id": invalid_movie_id}, format="json")
+  # Assert: Check for a 400 Bad Request response
+  assert response.status_code == 400, "Expected a 400 Bad Request response for an invalid movie ID"
 
