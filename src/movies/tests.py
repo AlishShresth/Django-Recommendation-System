@@ -1,4 +1,3 @@
-from django.test import TestCase
 import pytest
 from movies.views import fibonacci
 
@@ -16,13 +15,3 @@ from movies.views import fibonacci
 def test_fibonacci(n, expected):
   assert fibonacci(n) == expected
 
-
-# @pytest.fixture
-# def resource() -> Generator[str, None, None]:
-#   # Set up code before the yield statement
-#   resource = "Some resource"
-#   yield resource
-#   # Tear down code after the yield statement
-
-# def test_with_resource_fixture(resource:str) -> None:
-#   assert resource_fixture == 'Some resource'
