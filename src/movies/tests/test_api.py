@@ -2,8 +2,10 @@ import json
 
 import pytest
 from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
 from rest_framework.test import APIClient
+
 
 from movies.models import Movie
 from .factories import (
@@ -175,4 +177,39 @@ def test_add_invalid_movie_id_to_watch_history() -> None:
   response = client.post(watch_history_url, {"movie_id": invalid_movie_id}, format="json")
   # Assert: Check for a 400 Bad Request response
   assert response.status_code == 400, "Expected a 400 Bad Request response for an invalid movie ID"
+
+
+test_data = [(
+  "file.csv",
+  "text/csv",
+  b"title,genres,extra_data\ntest,comedy,{\"directors\":[\"name\"]}\n",
+  201,
+), # Expected to succeed for CSV
+(
+  "file.json",
+  "application/json",
+  b'[{"title": "test", "genres": ["comedy"], "extra_data": {"directors": ["name"]}}]',
+  201,
+), # Expected to succeed for JSON
+(
+  "file.txt",
+  "text/plain",
+  b"This is a test.",
+  400,
+), # Unsupported file type, expecting failure
+]
+@pytest.mark.parametrize("file_name, content_type, file_content, expected_status", test_data)
+@pytest.mark.django_db
+def test_general_upload_view(client: APIClient, file_name: str, content_type: str, file_content: str, expected_status: int):
+  # Generate the URL dynamically using "reverse"
+  url = reverse("movies:file-upload")
+
+  # Create an in-memory uploaded file
+  uploaded_file = SimpleUploadedFile(name=file_name, content=file_content, content_type=content_type)
+
+  # Make a POST request to the GeneralUploadView endpoint
+  response = client.post(url, {"file": uploaded_file}, format="multipart")
+
+  # Assert that the response status code matches the expected status
+  assert response.status_code == expected_status
 
