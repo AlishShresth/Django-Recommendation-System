@@ -16,7 +16,7 @@ from .factories import (
 @pytest.mark.django_db
 def test_create_movie(client: APIClient) -> None:
   # arrange
-  url = reverse('movies:movie-list')
+  url = reverse('movies:movie-api')
   data = {
     'title': 'A New Hope',
     'genres': json.dumps(['Sci-Fi', 'Adventure'])
@@ -32,7 +32,7 @@ def test_create_movie(client: APIClient) -> None:
 def test_retrieve_movie(client: APIClient) -> None:
   # arrange
   movie = MovieFactory()
-  url = reverse('movies:movie-detail', kwargs={'pk': movie.id})
+  url = reverse('movies:movie-api-detail', kwargs={'pk': movie.id})
   # action
   response = client.get(url)
   # assert
@@ -48,7 +48,7 @@ def test_update_movie(client: APIClient) -> None:
   # arrange
   movie = MovieFactory()
   new_title = "Updated Movie Title"
-  url = reverse('movies:movie-detail', kwargs={'pk': movie.id})
+  url = reverse('movies:movie-api-detail', kwargs={'pk': movie.id})
   data = {'title': new_title}
   # action
   response = client.put(url, data=data, content_type='application/json')
@@ -62,7 +62,7 @@ def test_update_movie(client: APIClient) -> None:
 def test_delete_movie(client: APIClient) -> None:
   # arrange
   movie = MovieFactory()
-  url = reverse('movies:movie-detail', kwargs={'pk': movie.id})
+  url = reverse('movies:movie-api-detail', kwargs={'pk': movie.id})
   # action
   response = client.delete(url)
   # assert
@@ -74,7 +74,7 @@ def test_list_movies_with_pagination(client: APIClient) -> None:
   # Create a batch of movies, adjust the number according to your PAGE_SIZE setting
   movies = MovieFactory.create_batch(10)
   # Define the URL for the list movies endpoint
-  url = reverse('movies:movie-list')
+  url = reverse('movies:movie-api')
   # Perform a GET request to the list endpoint
   response = client.get(url)
   # Assert that the response status code is 200 OK
@@ -120,7 +120,7 @@ def test_list_movies_with_pagination(client: APIClient) -> None:
 def test_add_and_retrieve_preferences_success(new_preferences, expected_genre):
   user = UserFactory()
   client = APIClient()
-  preferences_url = reverse("user-preferences", kwargs={"user_id": user.id})
+  preferences_url = reverse("movies:user-preferences", kwargs={"user_id": user.id})
   # Add new preferences
   response = client.post(preferences_url, {"new_preferences": new_preferences}, format='json')
   assert response.status_code in [200, 201]
@@ -140,7 +140,7 @@ def test_add_and_retrieve_preferences_success(new_preferences, expected_genre):
 def test_add_preferences_failure(new_preferences):
   user = UserFactory()
   client = APIClient()
-  preferences_url = reverse("user-preferences", kwargs={"user_id": user.id})
+  preferences_url = reverse("movies:user-preferences", kwargs={"user_id": user.id})
 
   # Attempt to add new preferences
   response = client.post(preferences_url, {"new_preferences": new_preferences}, format='json')
@@ -150,10 +150,21 @@ def test_add_preferences_failure(new_preferences):
 def test_add_and_retrieve_watch_history_with_movie_id() -> None:
   user = UserFactory()
   client = APIClient()
-  watch_history_url = reverse("user-watch-history", kwargs={"user_id": user.id})
+  watch_history_url = reverse("movies:user-watch-history", kwargs={"user_id": user.id})
   # Create movie instances using the MovieFactory
-  movie1 = MovieFactory(title="The Godfather", release_year=1972, directors=["Francis Ford Coppola"], genres=["Crime", "Drama"])
-  movie2 = MovieFactory(title="Taxi Driver", release_year=1976, directors=["Martin Scorsese"], genres=["Crime", "Drama"])
+  movie1 = MovieFactory(
+    title="The Godfather",
+    release_year=1972,
+    extra_data={
+      "directors": ["Francis Ford Coppola"],
+      "genres": ["Crime", "Drama"],
+    },
+  )
+  movie2 = MovieFactory(
+    title="Taxi Driver",
+    release_year=1976,
+    extra_data={"directors": ["Martin Scorsese"], "genres": ["Crime", "Drama"]},
+  )
   # Add movies to watch history using their IDs
   for movie in [movie1, movie2]:
     response = client.post(watch_history_url, {"id": movie.id}, format="json")
@@ -166,12 +177,12 @@ def test_add_and_retrieve_watch_history_with_movie_id() -> None:
   for movie_title in [movie1.title, movie2.title]:
     assert movie_title in retrieved_movie_ids
 
-@pytest.mark.django.db
+@pytest.mark.django_db
 def test_add_invalid_movie_id_to_watch_history() -> None:
   # Arrange: Create a user instance using Factory Boy
   user = UserFactory()
   client = APIClient()
-  watch_history_url = reverse("user-watch-history", kwargs={"user_id": user.id})
+  watch_history_url = reverse("movies:user-watch-history", kwargs={"user_id": user.id})
   # Act: Attempt to add a non-existent movie to the user's watch history
   invalid_movie_id = 99999
   response = client.post(watch_history_url, {"movie_id": invalid_movie_id}, format="json")
@@ -180,16 +191,17 @@ def test_add_invalid_movie_id_to_watch_history() -> None:
 
 
 test_data = [(
+  
   "file.csv",
   "text/csv",
   b"title,genres,extra_data\ntest,comedy,{\"directors\":[\"name\"]}\n",
-  201,
+  202,
 ), # Expected to succeed for CSV
 (
   "file.json",
   "application/json",
   b'[{"title": "test", "genres": ["comedy"], "extra_data": {"directors": ["name"]}}]',
-  201,
+  202,
 ), # Expected to succeed for JSON
 (
   "file.txt",

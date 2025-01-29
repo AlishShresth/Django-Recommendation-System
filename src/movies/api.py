@@ -1,7 +1,10 @@
+import os
+import uuid
 from contextlib import contextmanager
 from typing import Any
 
 from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from rest_framework import generics, status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -9,6 +12,7 @@ from rest_framework.views import APIView
 
 from movies.models import Movie
 from movies.services import add_preference, add_watch_history
+from movies.tasks import process_file
 
 from .serializers import (
     AddPreferenceSerializer,
@@ -81,13 +85,17 @@ class GeneralUploadView(APIView):
       uploaded_file = serializer.validated_data["file"]
       file_type = uploaded_file.content_type
 
-      with temporary_file(uploaded_file) as file_path:
-        processor = FileProcessor()
-        movies_processed = processor.process(file_path, file_type)
-        return Response({
-          "message": f"{movies_processed} movies processed successfully."
-        },
-        status=status.HTTP_201_CREATED,
-        )
+      # Extract the file extension
+      file_extension = os.path.splitext(uploaded_file.name)[1]
+      # Generate a unique file name using UUID
+      unique_file_name = f"{uuid.uuid4()}{file_extension}"
+      # Save the file directly to the default storage
+      file_name = default_storage.save(unique_file_name, ContentFile(uploaded_file.read()))
+
+      return Response(
+        {"message": f"Job enqueued for processing."},
+        status=status.HTTP_202_ACCEPTED,
+      )
     else:
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
