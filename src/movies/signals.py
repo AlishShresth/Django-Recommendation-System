@@ -7,9 +7,10 @@ from movies.models import UserMoviePreferences
 
 User = get_user_model()
 
+
 @receiver(post_save, sender=User)
 def create_or_update_user_movie_preferences(sender: Type[ModelBase], instance: Any, created: bool, **kwargs: dict[str, Any]) -> None:
-  if created:
-    UserMoviePreferences.objects.create(user=instance)
-  else:
-    instance.movie_preferences.save()
+    if created:
+        UserMoviePreferences.objects.create(user=instance)
+    else:
+        instance.movie_preferences.save()
