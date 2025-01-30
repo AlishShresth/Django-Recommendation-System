@@ -1,10 +1,11 @@
 import csv
 import json
 import datetime
-from typing import Dict, Any, Callable, Tuple
+from typing import Dict, Any, Tuple, IO
 from collections import defaultdict
 from django.db import transaction
 from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.db.utils import IntegrityError
@@ -76,33 +77,37 @@ def user_watch_history(user_id: int) -> dict[str, Any]:
   user_preferences = get_object_or_404(UserMoviePreferences, user_id=user_id)
   return {"watch_history": user_preferences.watch_history}
 
-def parse_csv(file_path: str) -> int:
+def parse_csv(file: IO[Any]) -> int:
   movies_processed = 0
-  with open(file_path, encoding="utf-8") as file:
-    reader = csv.DictReader(file)
-    for row in reader:
-      create_or_update_movie(**row)
-      movies_processed += 1
+  reader = csv.DictReader(file)
+  for row in reader:
+    create_or_update_movie(**row)
+    movies_processed += 1
   return movies_processed
 
-def parse_json(file_path: str) -> int:
+def parse_json(file: IO[Any]) -> int:
   movies_processed = 0
-  with open(file_path, encoding="utf-8") as file:
-    data = json.load(file)
-    for item in data:
-      create_or_update_movie(**item)
-      movies_processed += 1
+  data = json.load(file)
+  for item in data:
+    create_or_update_movie(**item)
+    movies_processed += 1
   return movies_processed
 
 class FileProcessor:
-  def process(self, file_path: str, file_type: str) -> int:
-    if file_type == "text/csv":
-      movies_processed = parse_csv(file_path)
-    elif file_type == "application/json":
-      movies_processed = parse_json(file_path)
+  def process(self, file_name: str, file_type: str) -> int:
+    # check if the file exists in the default storage
+    if default_storage.exists(file_name):
+      # Open the file directly from storage
+      with default_storage.open(file_name, "r") as file:
+        if file_type == "text/csv":
+          movies_processed = parse_csv(file)
+        elif file_type == "application/json":
+          movies_processed = parse_json(file)
+        else:
+          raise ValidationError("Invalid file type")
+      return movies_processed
     else:
-      raise ValidationError("Invalid file type")
-    return movies_processed
+      raise ValidationError("File does not exist in storage.")
 
 def create_or_update_movie(
     title: str,
