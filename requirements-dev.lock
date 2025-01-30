@@ -10,21 +10,57 @@
 #   universal: false
 
 -e file:.
+amqp==5.3.1
+    # via kombu
 asgiref==3.8.1
     # via django
+billiard==4.2.1
+    # via celery
+boto3==1.36.8
+    # via django-storages
+botocore==1.36.8
+    # via boto3
+    # via s3transfer
+celery==5.4.0
+    # via recommendation-system
+certifi==2024.12.14
+    # via requests
+charset-normalizer==3.4.1
+    # via requests
+click==8.1.8
+    # via celery
+    # via click-didyoumean
+    # via click-plugins
+    # via click-repl
+click-didyoumean==0.3.1
+    # via celery
+click-plugins==1.1.1
+    # via celery
+click-repl==0.3.0
+    # via celery
 django==5.1.5
     # via django-extensions
+    # via django-storages
     # via djangorestframework
     # via recommendation-system
 django-extensions==3.2.3
+    # via recommendation-system
+django-storages==1.14.4
     # via recommendation-system
 djangorestframework==3.15.2
     # via recommendation-system
 factory-boy==3.3.1
 faker==35.0.0
     # via factory-boy
+idna==3.10
+    # via requests
 iniconfig==2.0.0
     # via pytest
+jmespath==1.0.1
+    # via boto3
+    # via botocore
+kombu==5.4.2
+    # via celery
 mypy==1.14.1
 mypy-extensions==1.0.0
     # via mypy
@@ -32,16 +68,38 @@ packaging==24.2
     # via pytest
 pluggy==1.5.0
     # via pytest
+prompt-toolkit==3.0.50
+    # via click-repl
 pytest==8.3.4
     # via pytest-django
 pytest-django==4.9.0
 python-dateutil==2.9.0.post0
+    # via botocore
+    # via celery
     # via faker
+redis==5.2.1
+    # via recommendation-system
+requests==2.32.3
 ruff==0.9.2
+s3transfer==0.11.2
+    # via boto3
 six==1.17.0
     # via python-dateutil
 sqlparse==0.5.3
     # via django
+tqdm==4.67.1
 typing-extensions==4.12.2
     # via faker
     # via mypy
+tzdata==2025.1
+    # via celery
+    # via kombu
+urllib3==2.3.0
+    # via botocore
+    # via requests
+vine==5.1.0
+    # via amqp
+    # via celery
+    # via kombu
+wcwidth==0.2.13
+    # via prompt-toolkit
