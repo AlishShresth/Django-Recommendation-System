@@ -9,8 +9,8 @@ from rest_framework import generics, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoModelPermissions
+from rest_framework.decorators import permission_classes
 from movies.models import Movie
 from movies.services import add_preference, add_watch_history
 from movies.tasks import process_file
@@ -22,12 +22,15 @@ from movies.serializers import (
 )
 from movies.services import FileProcessor, user_preferences, user_watch_history
 
+from api_auth.permissions import CustomDjangoModelPermissions
+
 
 # For listing all movies and creating a new movie
 class MovieListCreateAPIView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
-    queryset = Movie.objects.all().order_by('id')
+    # queryset = Movie.objects.all().order_by('id')
+    queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+    permission_classes = [IsAuthenticated, CustomDjangoModelPermissions]
 
 # For retrieving, updating and deleting a single movie
 
@@ -36,7 +39,8 @@ class MovieDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
-
+# View to add new user preferences and retrieve them
+@permission_classes([IsAuthenticated])
 class UserPreferencesView(APIView):
     """
     View to add new user preferences and retrieve them.
@@ -54,7 +58,8 @@ class UserPreferencesView(APIView):
         data = user_preferences(user_id)
         return Response(data)
 
-
+# View to retrieve and add movies to the user's watch history
+@permission_classes([IsAuthenticated])
 class WatchHistoryView(APIView):
     """
     View to retrieve and add movies to the user's watch history.
@@ -87,7 +92,8 @@ def temporary_file(uploaded_file):
     finally:
         default_storage.delete(file_name)
 
-
+# View for general file uploads, restricted to admin users only
+@permission_classes([IsAdminUser])
 class GeneralUploadView(APIView):
     def post(self, request, *args: Any, **kwargs: Any) -> Response:
         serializer = GeneralFileUploadSerializer(data=request.data)

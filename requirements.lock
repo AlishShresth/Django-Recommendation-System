@@ -38,12 +38,16 @@ django==5.1.5
     # via django-extensions
     # via django-storages
     # via djangorestframework
+    # via djangorestframework-simplejwt
     # via recommendation-system
 django-extensions==3.2.3
     # via recommendation-system
 django-storages==1.14.4
     # via recommendation-system
 djangorestframework==3.15.2
+    # via djangorestframework-simplejwt
+    # via recommendation-system
+djangorestframework-simplejwt==5.4.0
     # via recommendation-system
 jmespath==1.0.1
     # via boto3
@@ -52,6 +56,8 @@ kombu==5.4.2
     # via celery
 prompt-toolkit==3.0.50
     # via click-repl
+pyjwt==2.10.1
+    # via djangorestframework-simplejwt
 python-dateutil==2.9.0.post0
     # via botocore
     # via celery
