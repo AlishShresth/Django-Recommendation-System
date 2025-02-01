@@ -14,6 +14,7 @@ amqp==5.3.1
     # via kombu
 asgiref==3.8.1
     # via django
+    # via django-cors-headers
 billiard==4.2.1
     # via celery
 boto3==1.36.8
@@ -39,10 +40,13 @@ click-plugins==1.1.1
 click-repl==0.3.0
     # via celery
 django==5.1.5
+    # via django-cors-headers
     # via django-extensions
     # via django-storages
     # via djangorestframework
     # via djangorestframework-simplejwt
+    # via recommendation-system
+django-cors-headers==4.6.0
     # via recommendation-system
 django-extensions==3.2.3
     # via recommendation-system

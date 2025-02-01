@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'api_auth',
     'movies',
     'storages',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+  "https://localhost:8000",
+  "https://localhost:3000"
 ]
 
 ROOT_URLCONF = 'recommendation_system_django.urls'
@@ -148,3 +155,8 @@ AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL", "http://localhost:9000")
 AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN", "localhost:9000")
 AWS_S3_USE_SSL = os.getenv("AWS_S3_USE_SSL", "False") == "True"
 AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME", "test-bucket")
+
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True

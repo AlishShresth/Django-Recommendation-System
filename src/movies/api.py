@@ -9,18 +9,17 @@ from rest_framework import generics, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import permission_classes
 from movies.models import Movie
 from movies.services import add_preference, add_watch_history
-from movies.tasks import process_file
 from movies.serializers import (
     AddPreferenceSerializer,
     AddToWatchHistorySerializer,
     GeneralFileUploadSerializer,
     MovieSerializer,
 )
-from movies.services import FileProcessor, user_preferences, user_watch_history
+from movies.services import user_preferences, user_watch_history
 
 from api_auth.permissions import CustomDjangoModelPermissions
 
@@ -38,6 +37,7 @@ class MovieListCreateAPIView(generics.ListCreateAPIView):
 class MovieDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+    permission_classes = [IsAuthenticated, CustomDjangoModelPermissions]
 
 # View to add new user preferences and retrieve them
 @permission_classes([IsAuthenticated])
