@@ -1,11 +1,13 @@
 # recommendation-system
 
-4. Securing and Scaling Data Science APIs
+5. Developing a Data Science Project
 
-- Understanding Django’s Authentication System
-- Introduction to Django’s Middleware
-- Setting Up Django Admin
-- Groups and Permissions
-- Implementing Authentication Methods
-- Custom Permissions for Sensitive Data
-- Ensuring Security in Data APIs
+- Introduction to Recommendation Engines
+- The Recommendation Algorithm
+- The Role of Cosine Similarity
+- Preparing the Local Environment
+- Cleanup the Data
+- Recommendation System Implementation Using Django
+- Validating Recommendation System with Unit Tests
+- Recommendation System Implementation
+
