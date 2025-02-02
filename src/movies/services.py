@@ -1,6 +1,11 @@
 import csv
 import json
 import datetime
+import re
+
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
 from typing import Dict, Any, Tuple, IO
 from collections import defaultdict
 from django.db import transaction
@@ -78,9 +83,27 @@ def user_watch_history(user_id: int) -> dict[str, Any]:
   return {"watch_history": user_preferences.watch_history}
 
 def parse_csv(file: IO[Any]) -> int:
+  """
+    Parses and processes a CSV file for movie data, cleaning the fields.
+  """
   movies_processed = 0
   reader = csv.DictReader(file)
   for row in reader:
+    extra_data = row.pop("extra_data").replace("'",'"')
+    try:
+      extra_data_dict = json.loads(extra_data)
+    except json.decoder.JSONDecodeError:
+      extra_data_dict = {}
+    row["extra_data"] = extra_data_dict
+    try:
+      row["release_year"] = int(row["release_year"])
+    except ValueError:
+      continue
+
+    # Clean the fields before passing the movie creation
+    row["title"] = clean_text(row["title"])
+    row["genres"] = [clean_text(genre) for genre in row["genres"].split(',')]
+    row["country"] = clean_text(row["country"])
     create_or_update_movie(**row)
     movies_processed += 1
   return movies_processed
@@ -138,6 +161,43 @@ def create_or_update_movie(
     return movie, created
   except Exception as e:
     raise ValidationError(f"Failed to create or update the movie: {str(e)}")
+
+# Function to detect strings starting with 'Q' followed by digits
+def detect_q_strings(text: str) -> list:
+  """
+    Detects strings that start with 'Q' followed by digits, useful for cleaning specific formats.
+  """
+  pattern = r'Q\d+'
+  return re.findall(pattern, text)
+
+# Define a function for cleaning text data
+def clean_text(text: str) -> str:
+  """
+    Cleans up the text data by removing punctuation, converting to lowercase,
+    removing stopwords, and lemmatizing the text.
+  """
+  if not isinstance(text, str):
+    return ""
+  
+  # Convert text to lowercase
+  text = text.lower()
+
+  # Remove any non-alphanumeric characters, keeping words and digits
+  text = re.sub(r'[^a-zA-z0-9\s]', '', text)
+
+  # Tokenize the text into words
+  words = word_tokenize(text)
+
+  # Remove stopwords
+  stop_words = set(stopwords.words('english'))
+  words = [word for word in words if word not in stop_words]
+
+  # Initialize lemmatizer and lemmatize the words
+  lemmatizer = WordNetLemmatizer()
+  words = [lemmatizer.lemmatize(word) for word in words]
+
+  # Join words back into a cleaned string
+  return ' '.join(words)
 
 
 

@@ -14,6 +14,9 @@ dependencies = [
     "django-storages[boto3]>=1.14.4",
     "djangorestframework-simplejwt>=5.4.0",
     "django-cors-headers>=4.6.0",
+    "nltk>=3.9.1",
+    "psycopg2-binary>=2.9.10",
+    "pydantic>=2.10.6",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
