@@ -7,6 +7,7 @@ from movies.api import (
     MovieListCreateAPIView,
     UserPreferencesView,
     WatchHistoryView,
+    MovieRecommendationAPIView,
 )
 
 app_name = "movies"  # Define the application namespace
@@ -26,4 +27,6 @@ urlpatterns = [
         name="user-watch-history",
     ),
     path("upload/", GeneralUploadView.as_view(), name="file-upload"),
+    path("recommendations/", MovieRecommendationAPIView.as_view(),
+         name="movie_recommendations"),
 ]

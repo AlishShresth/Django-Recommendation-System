@@ -61,10 +61,14 @@ jmespath==1.0.1
     # via botocore
 joblib==1.4.2
     # via nltk
+    # via scikit-learn
 kombu==5.4.2
     # via celery
 nltk==3.9.1
     # via recommendation-system
+numpy==2.2.2
+    # via scikit-learn
+    # via scipy
 prompt-toolkit==3.0.50
     # via click-repl
 psycopg2-binary==2.9.10
@@ -84,10 +88,16 @@ regex==2024.11.6
     # via nltk
 s3transfer==0.11.2
     # via boto3
+scikit-learn==1.6.1
+    # via recommendation-system
+scipy==1.15.1
+    # via scikit-learn
 six==1.17.0
     # via python-dateutil
 sqlparse==0.5.3
     # via django
+threadpoolctl==3.5.0
+    # via scikit-learn
 tqdm==4.67.1
     # via nltk
 typing-extensions==4.12.2

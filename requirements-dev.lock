@@ -72,6 +72,7 @@ jmespath==1.0.1
     # via botocore
 joblib==1.4.2
     # via nltk
+    # via scikit-learn
 kombu==5.4.2
     # via celery
 mypy==1.14.1
@@ -79,6 +80,9 @@ mypy-extensions==1.0.0
     # via mypy
 nltk==3.9.1
     # via recommendation-system
+numpy==2.2.2
+    # via scikit-learn
+    # via scipy
 packaging==24.2
     # via pytest
 pluggy==1.5.0
@@ -108,10 +112,16 @@ requests==2.32.3
 ruff==0.9.2
 s3transfer==0.11.2
     # via boto3
+scikit-learn==1.6.1
+    # via recommendation-system
+scipy==1.15.1
+    # via scikit-learn
 six==1.17.0
     # via python-dateutil
 sqlparse==0.5.3
     # via django
+threadpoolctl==3.5.0
+    # via scikit-learn
 tqdm==4.67.1
     # via nltk
 typing-extensions==4.12.2
