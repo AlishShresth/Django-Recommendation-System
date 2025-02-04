@@ -73,6 +73,8 @@ drf-spectacular==0.28.0
 factory-boy==3.3.1
 faker==35.0.0
     # via factory-boy
+gunicorn==23.0.0
+    # via recommendation-system
 idna==3.10
     # via requests
 inflection==0.5.1
@@ -100,6 +102,7 @@ numpy==2.2.2
     # via scikit-learn
     # via scipy
 packaging==24.2
+    # via gunicorn
     # via pytest
 pluggy==1.5.0
     # via pytest
