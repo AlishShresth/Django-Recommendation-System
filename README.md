@@ -1,11 +1,7 @@
 # recommendation-system
 
-4. Securing and Scaling Data Science APIs
+6. Documenting and Optimizing Your API
 
-- Understanding Django’s Authentication System
-- Introduction to Django’s Middleware
-- Setting Up Django Admin
-- Groups and Permissions
-- Implementing Authentication Methods
-- Custom Permissions for Sensitive Data
-- Ensuring Security in Data APIs
+- Setting Up OpenAPI in Django Rest Framework
+- Documenting API Endpoints
+- Performance Optimization Techniques for APIs
