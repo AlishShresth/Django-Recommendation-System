@@ -66,6 +66,8 @@ djangorestframework-simplejwt==5.4.0
     # via recommendation-system
 drf-spectacular==0.28.0
     # via recommendation-system
+gunicorn==23.0.0
+    # via recommendation-system
 inflection==0.5.1
     # via drf-spectacular
 jmespath==1.0.1
@@ -85,6 +87,8 @@ nltk==3.9.1
 numpy==2.2.2
     # via scikit-learn
     # via scipy
+packaging==24.2
+    # via gunicorn
 prompt-toolkit==3.0.50
     # via click-repl
 psycopg2-binary==2.9.10
