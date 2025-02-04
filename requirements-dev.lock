@@ -48,6 +48,7 @@ click-repl==0.3.0
 django==5.1.5
     # via django-cors-headers
     # via django-extensions
+    # via django-redis
     # via django-storages
     # via djangorestframework
     # via djangorestframework-simplejwt
@@ -56,6 +57,8 @@ django==5.1.5
 django-cors-headers==4.6.0
     # via recommendation-system
 django-extensions==3.2.3
+    # via recommendation-system
+django-redis==5.4.0
     # via recommendation-system
 django-storages==1.14.4
     # via recommendation-system
@@ -120,6 +123,7 @@ python-dateutil==2.9.0.post0
 pyyaml==6.0.2
     # via drf-spectacular
 redis==5.2.1
+    # via django-redis
     # via recommendation-system
 referencing==0.36.2
     # via jsonschema
